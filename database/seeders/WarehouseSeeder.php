@@ -8,17 +8,12 @@ use Illuminate\Database\Seeder;
 class WarehouseSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
-     */
-    /**
      * Заполнить таблицу складов.
-     *
-     * @return void
      */
-    public function run()
+    public function run(): void
     {
-         Warehouse::insert([
-            ['name' => 'Основной склад'],
+        Warehouse::firstOrCreate([
+            'name' => 'Основной склад',
         ]);
     }
 }

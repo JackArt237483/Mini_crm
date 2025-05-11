@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/warehouses', [WarehouseController::class, 'index']);
 Route::get('/products', [ProductController::class, 'index']);
-Route::get('/orders', [OrderController::class, 'index']);
 
-                 
+Route::apiResource('orders', OrderController::class);
 ?>

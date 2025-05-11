@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
@@ -42,4 +43,32 @@ class OrderController extends Controller
             'data' => $orders
         ]);
     }
+    public function store(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'customer' => 'required|string',
+            'items' => 'required|array|min:1',
+            'items.*.product_id' => 'required|exists:products,id',
+            'items.*.quantity' => 'required|integer|min:1',
+        ]);
+
+        // Создание заказа
+        $order = Order::create([
+            'customer' => $validated['customer'],
+            'status' => 'new', // или по умолчанию
+        ]);
+
+        // Добавление позиций в заказ
+        foreach ($validated['items'] as $item) {
+            $product = Product::findOrFail($item['product_id']);
+            $order->items()->create([
+                'product_id' => $product->id,
+                'quantity' => $item['quantity'],
+                'price' => $product->price,
+            ]);
+        }
+
+        return response()->json(['message' => 'Заказ создан', 'order' => $order->load('items')], 201);
+    }
+
 }
